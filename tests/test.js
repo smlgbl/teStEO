@@ -42,17 +42,17 @@ casper.metaRobotsContains = function( what ) {
 	var robotsContent = this.getElementAttribute( robotsTag, "content" );
 	this.test.assert( robotsContent.indexOf( what ) >= 0, "Robot tag contains " + what );
 	// check opposites
-	if( what.indexOf( "no" ) != 0 ) 
+	if( what.indexOf( "no" ) !== 0 ) 
 		this.test.assert( robotsContent.indexOf( "no" + what ) == -1, "Robot tag doesn't contain no" + what );
 };
 
 casper.xRobotsHeaderDoesntExist = function( response ) {
 	this.waitForSelector( standardSelectorToWaitFor, 
 		function success() {
-			this.test.assert( null == response.headers.get('X-Robots'), "No X-Robots header found" );
+			this.test.assert( null === response.headers.get('X-Robots'), "No X-Robots header found" );
 		},
 		function fail() {
-			this.test.assert( null == response.headers.get('X-Robots'), "No X-Robots header found" );
+			this.test.assert( null === response.headers.get('X-Robots'), "No X-Robots header found" );
 		}, standardWaitingTime
 	);
 };
@@ -108,9 +108,9 @@ casper.pageContainsLink = function( link ) {
 			return elem.getAttribute('href');
 		});
 	});
-	this.test.assert( links != null, "Links found in page" );
+	this.test.assert( links !== null, "Links found in page" );
 	var linkIndex = -1;
-	if( links != null && links.length > 0 ) {
+	if( links !== null && links.length > 0 ) {
 		this.test.assert( links.some( function( elem, index ) {
 			if( elem.indexOf( link ) >= 0 ) {
 				linkIndex = index;
@@ -125,11 +125,12 @@ casper.test.comment("Test an array of urls and tags");
 
 casper.start().each( conf, function( self, page ) {
 	self.thenOpen( page.url, function( response ) {
-		if( page.headers ) {
-			if( page.headers['X-Robots'] == false ) {
+		casper.test.comment( "Running tests for " + page.url );
+//		if( page.headers ) {
+//			if( page.headers['X-Robots'] === false ) {
 				this.xRobotsHeaderDoesntExist( response );
-			}
-		}
+//			}
+//		}
 
 		if( page.tags ) {
 			if( page.tags['canonical'] ) {
@@ -164,13 +165,60 @@ casper.start().each( conf, function( self, page ) {
 						this.pageContainsLink( page.content["link"] );
 						break;
 					default:
-						if( page.content[elem] == true ) {
+						if( page.content[elem] === true ) {
 							this.pageContainsTag( elem );
 						} else {
 //							this.pageDoesntContainTag( elem );
 						}
 				}
 			}, this );
+		}
+
+		if( page.tracking ) {
+			if( page.tracking.TC ) {
+				this.test.assert(
+						this.evaluate( function() {
+							return ( TC && typeof TC === 'object' );
+						} ), "TC object found"
+						);
+				Object.keys( page.tracking.TC ).forEach( function( key ) {
+					var k = key;
+					var v = page.tracking.TC[k];
+					this.test.assert( this.evaluate( function( k, v ) {
+						return ( TC && typeof TC === 'object' && TC[k] && TC[k] == v );
+					}, k, v ) , "TC object contains element " + k + " = " + v );
+				}, this );
+			}
+			if( page.tracking.plugins ) {
+				this.test.assert(
+						this.evaluate( function() {
+							return ( pacTracking.plugins && typeof pacTracking.plugins === 'object' );
+						} ), "pacTracking.plugins object found"
+						);
+				Object.keys( page.tracking.plugins ).forEach( function( key ) {
+					var k = key;
+					var v = page.tracking.plugins[k];
+					this.test.assert( 
+						this.evaluate( 
+							function( k, v ) {
+								return ( pacTracking.plugins && 
+									typeof pacTracking.plugins === 'object' && 
+									pacTracking.plugins[k] && 
+									typeof pacTracking.plugins[k] === 'function' 
+								);
+							}, k, v 
+						) , "plugins object contains element " + k 
+					);
+					this.test.assert( this.evaluate( function( k, v ) {
+						return ( pacTracking.pluginConfig && 
+							typeof pacTracking.pluginConfig === 'object' && 
+							pacTracking.pluginConfig[k] && 
+							typeof pacTracking.pluginConfig[k] === 'object' );
+						}, k, v 
+						) , "pluginConfig object contains element " + k 
+					);
+				}, this );
+			}
 		}
 
 	});
