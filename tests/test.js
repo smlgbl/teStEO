@@ -13,7 +13,7 @@ var standardWaitingTime = 15000;
 
 var defaultSettings = {
 	method: "post",
-	data: 	{
+	data: {
 		username: "projecta",
 		password: "mate20mg"
 	}
@@ -133,25 +133,25 @@ casper.start().each( conf, function( self, page ) {
 //		}
 
 		if( page.tags ) {
-			if( page.tags['canonical'] ) {
-				this.canonicalTagEquals( page.tags['canonical'] );
+			if( page.tags.canonical ) {
+				this.canonicalTagEquals( page.tags.canonical );
 			} else {
 				this.canonicalTagDoesntExist();
 			}
-			if( page.tags['robots'] ) {
-				if( utils.isArray( page.tags['robots'] ) ) {
-					page.tags['robots'].forEach( function( elem ) {
+			if( page.tags.robots ) {
+				if( utils.isArray( page.tags.robots ) ) {
+					page.tags.robots.forEach( function( elem ) {
 						this.metaRobotsContains( elem );
 					}, this );
 				} else {
-					this.metaRobotsContains( page.tags['robots'] );
+					this.metaRobotsContains( page.tags.robots );
 				}
 			}
-			if( page.tags["description"] ) {
-				this.checkDescription( page.tags["description"] );
+			if( page.tags.description ) {
+				this.checkDescription( page.tags.description );
 			}
-			if( page.tags["title"] ) {
-				this.checkTitleTag( page.tags["title"] );
+			if( page.tags.title ) {
+				this.checkTitleTag( page.tags.title );
 			}
 		}
 
@@ -159,10 +159,10 @@ casper.start().each( conf, function( self, page ) {
 			Object.keys( page.content ).forEach( function( elem ) {
 				switch( elem ) {
 					case "text":
-						this.pageContainsText( page.content["text"] );
+						this.pageContainsText( page.content.text );
 						break;
 					case "link":
-						this.pageContainsLink( page.content["link"] );
+						this.pageContainsLink( page.content.link );
 						break;
 					default:
 						if( page.content[elem] === true ) {
@@ -200,13 +200,13 @@ casper.start().each( conf, function( self, page ) {
 					var v = page.tracking.plugins[k];
 					this.test.assert( 
 						this.evaluate( 
-							function( k, v ) {
+							function( k ) {
 								return ( pacTracking.plugins && 
 									typeof pacTracking.plugins === 'object' && 
 									pacTracking.plugins[k] && 
 									typeof pacTracking.plugins[k] === 'function' 
 								);
-							}, k, v 
+							}, k 
 						) , "plugins object contains element " + k 
 					);
 					this.test.assert( this.evaluate( function( k, v ) {
