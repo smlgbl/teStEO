@@ -52,4 +52,35 @@ var conf = [
 		},
 		plugins: plugins
 	}
+},
+{
+	url:	"https://www.natue.com.br/cart/index/add?sku=1501031331&qty=1",
+	tags:	{
+		"robots":		[ "noindex", "nofollow" ]
+	},
+	tracking:	{
+		TC:	{
+			contentId:	"cart.add",
+			currency:	"BRL",
+			pageType:	"cart",
+			locationId: "cart.index.index",
+			product: "1501031331",
+			productQuantity: "1"
+		},
+		plugins: plugins
+	}
+},
+{
+	url:	"http://www.natue.com.br/checkout",
+	tags:	{
+		"robots":		[ "index", "follow" ]
+	},
+	tracking:	{
+		TC:	{
+			contentId:	"checkout.register",
+			currency:	"BRL",
+			pageType:	"checkout"
+		},
+		plugins: plugins
+	}
 }];
