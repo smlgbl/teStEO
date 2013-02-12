@@ -4,6 +4,7 @@ var robotsTag = 'meta[name=robots]';
 var canonicalTag = 'link[rel=canonical]';
 var titleTag = 'title';
 var descTag = 'meta[name=description]';
+var keywordsTag = 'meta[name=keywords]';
 var standardSelectorToWaitFor = 'body';
 var bodySelector = standardSelectorToWaitFor;
 
@@ -46,6 +47,15 @@ casper.metaRobotsContains = function( what ) {
 		this.test.assert( robotsContent.indexOf( "no" + what ) == -1, "Robot tag doesn't contain no" + what );
 };
 
+casper.checkKeywords = function( keywords ) {
+	this.test.assertExists( keywordsTag, "Keywords definition found" );
+	if( ! utils.isArray( keywords ) ) keywords = [ keywords ];
+	var foundKeywords = this.getElementAttribute( keywordsTag, 'content' );
+	keywords.forEach( function( k ) {
+		this.test.assert( foundKeywords.indexOf( k ) >= 0, "Found keyword " + k );
+	}, this );
+};
+
 casper.xRobotsHeaderDoesntExist = function( response ) {
 	this.waitForSelector( standardSelectorToWaitFor, 
 		function success() {
@@ -83,7 +93,7 @@ casper.checkDescription = function( should ) {
 			break;
 		case "string":
 			this.test.assertExists( descTag, "Description tag exists" );
-			this.test.assertEquals( titleTag, should, "Title tag contains " + should );
+			this.test.assertEquals( this.getElementAttribute( descTag, 'content' ), should, "Description tag contains " + should );
 			break;
 		default:
 			this.test.assert( false, "Config for Description tag is wrong! " + typeof should + " : " + should );
@@ -92,7 +102,7 @@ casper.checkDescription = function( should ) {
 
 casper.pageContainsTag = function( tag, content ) {
 	this.test.assertSelectorExists( tag, tag + " exists in page" );
-//	this.test.assertSelectorHasText( tag, content, tag + " doesn't contain " + content + ", but instead " + this.fetchText( tag ))
+	this.test.assertSelectorHasText( tag, content, tag + " contains " + content);
 };
 
 casper.pageContainsText = function( what ) {
@@ -153,6 +163,9 @@ casper.start().each( conf, function( self, page ) {
 			if( page.tags.title ) {
 				this.checkTitleTag( page.tags.title );
 			}
+			if( page.tags.keywords ) {
+				this.checkKeywords( page.tags.keywords );
+			}
 		}
 
 		if( page.content ) {
@@ -165,8 +178,8 @@ casper.start().each( conf, function( self, page ) {
 						this.pageContainsLink( page.content.link );
 						break;
 					default:
-						if( page.content[elem] === true ) {
-							this.pageContainsTag( elem );
+						if( typeof page.content[elem] === 'string' ) {
+							this.pageContainsTag( elem, page.content[elem] );
 						} else {
 //							this.pageDoesntContainTag( elem );
 						}
