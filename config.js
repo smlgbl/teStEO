@@ -1,3 +1,13 @@
+var plugins = {
+	criteo:		true,
+	googleadwordssale:		true,
+	googleanalyticsecommerce:		true,
+	pac_conversionswitch:		true,
+	soquero:		true,
+	tradedoubler:		false,
+	zanoxsale:	true
+};
+
 var conf = [
 {
 	url:	"http://www.tirendo.de",
@@ -57,6 +67,22 @@ var conf = [
 	tags:	{
 		"canonical":	"http://www.tirendo.de/pkw/reifen/pirelli/p-2500-euro-4s/",
 		"robots":		[ "noindex", "follow" ]
+	}
+},
+{
+	url:	"https://www.tirendo.de/cart/index/add?CartAddForm%5Bsku%5D%5B%5D=DEE44EB1FB3C7FA441488C8338543FB0&CartAddForm%5Bqty%5D%5B%5D=4",
+	tags:	{
+		"robots":		[ "noindex", "follow" ]
+	},
+	tracking:	{
+		TC:	{
+			contentId:	"cart.non-empty",
+			currency:	"EUR",
+			pageType:	"cart",
+			product: "134591",
+			productQuantity: "4"
+		},
+		plugins: plugins
 	}
 }
 ];

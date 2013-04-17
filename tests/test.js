@@ -197,9 +197,12 @@ casper.start().each( conf, function( self, page ) {
 				Object.keys( page.tracking.TC ).forEach( function( key ) {
 					var k = key;
 					var v = page.tracking.TC[k];
+					this.test.assert( this.evaluate( function( k ) {
+						return ( TC && typeof TC === 'object' && TC[k] && typeof TC[k] === 'string' );
+					}, k ) , "TC object contains element " + k );
 					this.test.assert( this.evaluate( function( k, v ) {
 						return ( TC && typeof TC === 'object' && TC[k] && TC[k] == v );
-					}, k, v ) , "TC object contains element " + k + " = " + v );
+					}, k, v ) , "TC object's element " + k + " contains " + v );
 				}, this );
 			}
 			if( page.tracking.plugins ) {
@@ -211,25 +214,27 @@ casper.start().each( conf, function( self, page ) {
 				Object.keys( page.tracking.plugins ).forEach( function( key ) {
 					var k = key;
 					var v = page.tracking.plugins[k];
-					this.test.assert( 
-						this.evaluate( 
-							function( k ) {
-								return ( pacTracking.plugins && 
-									typeof pacTracking.plugins === 'object' && 
-									pacTracking.plugins[k] && 
-									typeof pacTracking.plugins[k] === 'function' 
-								);
-							}, k 
-						) , "plugins object contains element " + k 
-					);
-					this.test.assert( this.evaluate( function( k, v ) {
-						return ( pacTracking.pluginConfig && 
-							typeof pacTracking.pluginConfig === 'object' && 
-							pacTracking.pluginConfig[k] && 
-							typeof pacTracking.pluginConfig[k] === 'object' );
-						}, k, v 
+					if( v ) {
+						this.test.assert( 
+							this.evaluate( 
+								function( k ) {
+									return ( pacTracking.plugins && 
+										typeof pacTracking.plugins === 'object' && 
+										pacTracking.plugins[k] && 
+										typeof pacTracking.plugins[k] === 'function' 
+										);
+								}, k 
+								) , "plugins object contains element " + k 
+							);
+						this.test.assert( this.evaluate( function( k, v ) {
+							return ( pacTracking.pluginConfig && 
+								typeof pacTracking.pluginConfig === 'object' && 
+								pacTracking.pluginConfig[k] && 
+								typeof pacTracking.pluginConfig[k] === 'object' );
+						}, k 
 						) , "pluginConfig object contains element " + k 
-					);
+							);
+					}
 				}, this );
 			}
 		}
